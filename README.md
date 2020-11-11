@@ -1,5 +1,5 @@
 <h1>How To Run</h1>
-se non si dispone di python 3.x sul proprio computer installarlo da [GitHub](https://www.python.org/ftp/python/3.9.0/python-3.9.0-amd64.exe)
+se non si dispone di python 3.x sul proprio computer installarlo da https://www.python.org/ftp/python/3.9.0/python-3.9.0-amd64.exe
 
 installato python fare doppio click su main.py oppure usando un terminale entrate nel percorso dei file scaricati con il comando "cd" e 
 scrivere python main.py nella cartella hackabot2A/
