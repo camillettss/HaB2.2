@@ -1,0 +1,29 @@
+{
+    "commands":[
+        "select",
+        "show",
+        "notes",
+        "help"
+    ],
+    "cheatsheet":{
+        "select":{
+            "params":["-m", "--method"],
+            "output":"seleziona un oggetto usando un metodo specifico",
+            "notes":"puoi selezionare per id o pos, id->botID, pos->x,y"
+        }, "show":{
+            "params":["id", "pos", "null"],
+            "output":"mostra uno specifico valore sulla mappa",
+            "notes":"non puoi mostrare sia pos che id insieme."
+        },
+        "notes":{
+            "params":["add","append","new", "show"],
+            "output":"aggiungi o mostra una nota",
+            "notes":"le note sono stringhe salvate per dopo, magari un algoritmo."
+        },
+        "help":{
+            "params":[],
+            "output":"mostra la lista di comandi.",
+            "notes":""
+        }
+    }
+}
