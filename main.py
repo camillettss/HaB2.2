@@ -5,8 +5,10 @@ random.seed(time.time())
 from core.Characters import *
 from core.Errors import CommandError
 from core.Colors import bcolors as css
+from core.Shop import Shop
 import json
 import msvcrt
+import atexit
 
 columns=4
 rows=5
@@ -24,12 +26,24 @@ if not srcdata=='':#not usrdata['firstlaunch'] in ['1',1]:
         exec(key+'='+repr(srcdata[key]))
     #del srcdata
 
+points={
+    "win":10,
+    "kill":1,
+}
+
 class Engine():
     def __init__(self, spawns=1):
         super().__init__()
+        atexit.register(self.cleanup)
         self.robots=[Robot(columns, rows, self) for _ in range(spawns)] # spawn on startup
+        self.robots.append(Level2Robot(columns, rows, self)) # add a level 2 robot
         self.selected=None #self.robots[0]
         self.commands=json.loads(open('core/cmds.json').read())['commands']
+        self.gamepoints=0
+        self.beforeclean=srcdata
+        self.inshop=False
+        self.inbshell=False
+        self.shop_support=Shop(self)
         # - graphic sets
         self.showids=False
         self.showpos=False
@@ -41,9 +55,19 @@ class Engine():
                     del self.robots[j]; rmvd+=1
         for _ in range(rmvd):
             self.robots.append(Robot(columns, rows, self))
+    
+    def cleanup(self):
+        global srcdata
+        print('Exiting')
+        f=open('data/dumped.dat','w')
+        f.write(base64.b64encode(json.dumps(self.beforeclean).encode()).decode())
+        f.close()
 
     def run(self):
+        self.main_menu()
         while True:
+            while self.inshop:
+                self.shop(globals()['srcdata']['score'])
             #sys.stdout.flush()
             #os.system('cls')
             if not len(self.robots): self.win()
@@ -52,6 +76,10 @@ class Engine():
                 # execute an engine command
                 try:
                     self.parser(input(css.OKGREEN+'[CMD]'+css.ENDC+css.OKCYAN+'[MAIN]'+css.ENDC+'>> '))
+                except IndexError:
+                    pass
+                except NotImplementedError:
+                    print(css.FAIL+'[ERR]'+css.ENDC+' Bot level is too low to perform this task.')
                 except Exception as e:
                     print(e)
             else:
@@ -61,11 +89,13 @@ class Engine():
                     print(e)
 
     def parser(self, x):
+        global srcdata
         cmd=x.split()[0].lower()
         params=x.split()[1:]
         if '-h' in params or '--help' in params:
             self.docs(cmd); return
-        if not cmd in self.commands: raise CommandError(cmd)
+        if not cmd in self.commands and not cmd in self.shop_support.tools: raise CommandError(cmd)
+        if not cmd in self.commands and cmd in self.shop_support.tools['0' if not self.selected else '1']: print(css.OKCYAN+'[SHOP]'+css.ENDC+css.FAIL+'[ERR]'+css.ENDC+' Per usare questo comando devi prima comprarlo.'); return
         if cmd=='select':
             try:
                 if '-m' in params:
@@ -73,7 +103,7 @@ class Engine():
                 elif '--method' in params:
                     m=params[params.index('--method')+1]
                 else:
-                    print(css.FAIL+'[ERR]'+css.ENDC+'Missing -m parameter.'); return
+                    print(css.FAIL+'[ERR]'+css.ENDC+' Missing -m parameter.'); return
                 if m=='id':
                     for bot in self.robots:
                         if bot.id==str(params[params.index(m)+1]):
@@ -94,6 +124,43 @@ class Engine():
         elif cmd=='help':
             print(css.HEADER+'[H]'+css.ENDC+' List of commands:'); [print('-',_cmd) for _cmd in self.commands]
             print(css.HEADER+'[H]'+css.ENDC+' Type "cmd -h" for info about cmd.')
+        elif cmd=='reset':
+            if not len(params):
+                print(css.FAIL+'[ERR]'+css.ENDC+' Invalid syntax, check "reset -h"'); return
+            if '-w' in params:
+                w=params[params.index('-w')+1]
+            else:
+                w=params[0]
+            if w=='*':
+                srcdata={'usrname':input('[>] New user name: '), 'score':0}
+                self.commands=[
+                    "select",
+                    "show",
+                    "notes",
+                    "help",
+                    "bye",
+                    "reset",
+                    "shop"
+                ]
+            elif w=='usrname':
+                srcdata.update({'usrname':input('[>] New user name: ')})
+            elif w=='score':
+                srcdata.update({'score':0})
+            else:
+                print(css.FAIL+'[ERR]'+css.ENDC+' Invalid key:',w)
+            self.dump()
+            print(css.OKCYAN+'[OK]'+css.ENDC+' Done.')
+        elif cmd=='bye':
+            print('[?] Are you sure?')
+            c=msvcrt.getch().decode()
+            if c in ['y','s']:
+                # accredita
+                globals()['srcdata']['score']+=self.gamepoints
+                self.main_menu()
+            elif c=='n':
+                return
+            else:
+                print(css.FAIL+'[ERR]'+css.ENDC+' Unrecognized key, back to game.')
         elif cmd=='show':
             if params[0]=='notes':
                 for note in self.notes:
@@ -122,14 +189,44 @@ class Engine():
                 if not '-text' in params: raise CommandError()
                 self.notes.append(' '.join(params[params.index('-text')+1:]))
             return
+        elif cmd=='shop':
+            # parse before entering
+            if not len(params):
+                self.inshop=True; return
+            else:
+                if '-sw' in params:
+                    self.shop_support.swindow()
+                if '-buy' in params:
+                    #print(params)
+                    self.shop_support.shop(params[params.index('-buy')+1], prize=json.loads(open('core/Shop/storage/tools.json').read())[params[params.index('-buy')+1]]['prize'])
+                if not '-e' in params:
+                    self.inshop=True
     
+    def subtract_points(self, value):
+        global srcdata
+        globals()['srcdata']['score']-=int(value)
+        self.dump()
+        # mantieni il tool acquistato
+        #actual_tools=json.loads(open('core/cmds.json'))
+
+    def dump(self):
+        f=open('data/dumped.dat','w') # user data
+        f.write(base64.b64encode(json.dumps(srcdata).encode()).decode())
+        f.close()
+        #f=open('core/cmds.json','w') # new commands and sheets
+    
+    # -- screens
     def win(self):
         os.system('cls')
         titles=[
             '__   _____  _   _  __        _____ _   _ \n\\ \\ / / _ \\| | | | \\ \\      / /_ _| \\ | |\n \\ V / | | | | | |  \\ \\ /\\ / / | ||  \\| |\n  | || |_| | |_| |   \\ V  V /  | || |\\  |\n  |_| \\___/ \\___/     \\_/\\_/  |___|_| \\_|\n                                         \n',
             '                                                \n# #      #      # #         # #     ###     ### \n# #     # #     # #         # #      #      # # \n #      # #     # #         ###      #      # # \n #      # #     # #         ###      #      # # \n #       #      ###         # #     ###     # # \n'
             ]
-
+        srcdata['score']+=points['win']
+        srcdata['score']+=self.gamepoints
+        f=open('data/dumped.dat','w')
+        f.write(base64.b64encode(json.dumps(srcdata).encode()).decode())
+        f.close()
         print(css.OKGREEN+random.choice(titles)+css.ENDC)
         input('\n\npress any key to continue..')
         os.system('cls')
@@ -144,13 +241,41 @@ class Engine():
             else:
                 print('[ERR] Invalid Key',r,'.')
                 continue
-    
+
+    def main_menu(self, err=None):
+        os.system('cls')
+        print('\n\t[-] Hello '+globals()['srcdata']['usrname']+' [-]')
+        print('\t'+(' '*4)+css.HEADER+'[SCORE]'+css.ENDC,globals()['srcdata']['score'],css.HEADER+'[SCORE]\n'+css.ENDC)
+        print(css.OKGREEN+'\t'+(' '*5)+'START NEW GAME [1]'+css.ENDC)
+        print(css.FAIL+'\t\t  EXIT [0]'+css.ENDC)
+        if err:
+            print('[ERR] invalid key:',err)
+        print('\n1 Enter the option key:'); ck=msvcrt.getch()
+        if ck.decode() in ['s',1,'1','y']:
+            os.system('cls')
+            return
+        elif ck.decode() in ['e',0,2,'0','2']:
+            # dump and exit
+            f=open('data/dumped.dat','w')
+            f.write(base64.b64encode(json.dumps(globals()['srcdata']).encode()).decode())
+            f.close()
+            exit()
+        else:
+            self.main_menu(ck.decode())
+
+    def shop(self, money, *args):
+        if not len(args): # mostra la vetrina e entra nel parser
+            #self.shop_support.swindow()
+            self.shop_support.parser(money)
+        else:
+            self.shop_support.parser(*args)
+
     def mktable(self):
         for column in range(columns):
             print('')
             for row in range(rows):
                 #print('pos: ',{'x':column, 'y':row})
-                pos=[column,row]; done=False
+                pos=[row,column]; done=False
                 for obj in self.robots:
                     if obj.pos==pos:
                         if self.showids:
@@ -198,8 +323,8 @@ def intro():
     print('_ _ _ _ _   Questa è la mappa, gli underscore "_" indicano che il tile è vuoto.')
     print('_ _ _ _ _   i Robot sono indicati con R e la loro posizione è [x,y],')
     print('_ _ _ _ _   per selezionarne uno puoi usare diversi metodi del comando select,')
-    print('_ _ _ _ _  con -m specifichi il metodo, usa id per selezionare tramite indrizzo e pos')
-    print('_ _ _ _ _  per usare le coordinate. per vedere pos o id scrivi "show pos" o "show id"')
+    print('_ _ _ _ _   con -m specifichi il metodo, usa id per selezionare tramite indrizzo e pos')
+    print('_ _ _ _ _   per usare le coordinate. per vedere pos o id scrivi "show pos" o "show id"')
     input('\npress any key...')
     os.system('cls')
     print("l'obiettivo del gioco e' spegnere tutti i robot prima che (niente non ho ancora implementato questa parte).")

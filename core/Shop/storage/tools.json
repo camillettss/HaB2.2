@@ -1,0 +1,14 @@
+{
+    "0":{},
+    "1": {
+        "crack": {
+            "params": [
+                "-port"
+            ],
+            "output": "this will gain you BShell control",
+            "notes": "-port port to bypass",
+            "prize": "10",
+            "update_path": "core/Characters/cmds.json"
+        }
+    }
+}

@@ -3,7 +3,10 @@
         "select",
         "show",
         "notes",
-        "help"
+        "help",
+        "bye",
+        "reset",
+        "shop"
     ],
     "cheatsheet":{
         "select":{
@@ -24,6 +27,21 @@
             "params":[],
             "output":"mostra la lista di comandi.",
             "notes":""
+        },
+        "bye":{
+            "params":[],
+            "output":"go back to title screen",
+            "notes":""
+        },
+        "reset":{
+            "params":["-w"],
+            "output":"delete a saved variable ( specified by -w)",
+            "notes":"-w values: * for everything, usrname or usr for change ur name and score to set score=0"
+        },
+        "shop":{
+            "params":["-buy", "-sw", "-e"],
+            "output":"entra nello shop o compra direttamente qualcosa.",
+            "notes":"se -sw è specificato mostra la vetrina. -buy precede il tool da comprare. usa -e per non entrare nello shop"
         }
     }
 }

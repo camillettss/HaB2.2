@@ -1,57 +1,99 @@
 {
-    "commands":[
+    "bscommands":[
+        "move"
+    ],
+    "BSsheet":{
+        "move":{
+            "params":["-pos"],
+            "output":"sposta nella casella adiacente avente coordinate -pos x,y"
+        }
+    },
+    "commands": [
         "help",
         "hack",
         "scan",
-        "destroy", "shutdown",
+        "destroy",
+        "shutdown",
         "hash",
-        "translater", "encoder", "decoder",
-        "exit"
+        "translater",
+        "encoder",
+        "decoder",
+        "exit",
+        "crack",
+        "info",
+        "bshell"
     ],
-    "cheatsheet":{
-        "hack":{
-            "params":["port"],
-            "output":"se port è sbloccata usala per disattivare i sistemi di sicurezza del bot"
+    "cheatsheet": {
+        "hack": {
+            "params": [
+                "port"
+            ],
+            "output": "se port \u00c3\u00a8 sbloccata usala per disattivare i sistemi di sicurezza del bot"
         },
-        "scan":{
-            "params":["port"],
-            "output":"restituisce una lista delle porte attive o disabilitate",
-            "notes":"se port è specificato scansionala"
+        "scan": {
+            "params": [
+                "port"
+            ],
+            "output": "restituisce una lista delle porte attive o disabilitate",
+            "notes": "se port \u00c3\u00a8 specificato scansionala"
         },
-        "destroy":{
-            "params":[],
-            "output":"elimina il bot",
-            "notes":"devi avere l'accesso al bot, ottienilo hackerandolo"
+        "destroy": {
+            "params": [],
+            "output": "elimina il bot",
+            "notes": "devi avere l'accesso al bot, ottienilo hackerandolo"
         },
-        "shutdown":{
-            "params":[],
-            "output":"elimina il bot",
-            "notes":"devi avere l'accesso al bot, ottienilo hackerandolo"
+        "shutdown": {
+            "params": [],
+            "output": "elimina il bot",
+            "notes": "devi avere l'accesso al bot, ottienilo hackerandolo"
         },
-        "hash":{
-            "params":["-res", "-port"],
-            "output":"usa una chiave per bypassare una porta o ottieni le hash della chiave",
-            "notes":"-res bypassa una porta sfruttando un hash decodificato, -port p mostra l'hash codificato di p"
+        "hash": {
+            "params": [
+                "-res",
+                "-port"
+            ],
+            "output": "usa una chiave per bypassare una porta o ottieni le hash della chiave",
+            "notes": "-res bypassa una porta sfruttando un hash decodificato, -port p mostra l'hash codificato di p"
         },
-        "encoder":{
-            "params":["-text"],
-            "output":"codifica una stringa",
-            "notes":"-text t codifica t"
+        "encoder": {
+            "params": [
+                "-text"
+            ],
+            "output": "codifica una stringa",
+            "notes": "-text t codifica t"
         },
-        "decoder":{
-            "params":["-text"],
-            "output":"codifica una stringa",
-            "notes":"-text t codifica t"
+        "decoder": {
+            "params": [
+                "-text"
+            ],
+            "output": "codifica una stringa",
+            "notes": "-text t codifica t"
         },
-        "translater":{
-            "params":["-text", "-mode"],
-            "output":"codifica o decodifica una stringa",
-            "notes":"-text t codifica/decodifica t, -mode 1 = codifica, -mode 2 = decodifica"
+        "translater": {
+            "params": [
+                "-text",
+                "-mode"
+            ],
+            "output": "codifica o decodifica una stringa",
+            "notes": "-text t codifica/decodifica t, -mode 1 = codifica, -mode 2 = decodifica"
         },
-        "exit":{
-            "params":[],
-            "output":"torna alla mappa",
-            "notes":""
+        "exit": {
+            "params": [],
+            "output": "torna alla mappa",
+            "notes": ""
+        },
+        "bshell": {
+            "params": [
+                "-cmd",
+                "-open"
+            ],
+            "output": "entra o esegui un comando nella BrainShell del bot",
+            "notes": "-cmd c = esegui c da remoto, se -open e' specificato entra nella BShell"
+        },
+        "info": {
+            "params": [],
+            "output": "mostra le informazioni del bot",
+            "notes": ""
         }
     }
 }

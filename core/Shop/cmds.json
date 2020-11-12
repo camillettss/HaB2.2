@@ -1,0 +1,20 @@
+{
+    "commands":[
+        "buy","shop",
+        "exit","bye"
+    ], "cheatsheet": {
+        "buy":{
+            "params":["-tool"],
+            "output":"acquista un tool usando i propri punti"
+        }, "shop":{
+            "params":["-tool"],
+            "output":"acquista un tool usando i propri punti"
+        }, "exit":{
+            "params":[""],
+            "output":"torna alla mappa"
+        }, "bye":{
+            "params":[""],
+            "output":"torna alla mappa"
+        }
+    }
+}

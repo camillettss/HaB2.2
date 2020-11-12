@@ -11,5 +11,4 @@ class CommandError(Exception):
 
 class HackError(Exception):
     def __init__(self, txt='', *args, **kwargs):
-        self.message=txt
-        print('[ERR] Unable to hack.')
+        print('\033[91m[ERR]\033[0m Unable to hack.'+txt)
