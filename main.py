@@ -293,10 +293,10 @@ class Engine():
         if err:
             print('[ERR] invalid key:',err)
         print('\n1 Enter the option key:'); ck=getch()
-        if ck.decode() in ['s',1,'1','y']:
+        if ck in ['s',1,'1','y']:
             os.system('cls')
             return
-        elif ck.decode() in ['e',0,2,'0','2']:
+        elif ck in ['e',0,2,'0','2']:
             # dump and exit
             f=open('data/dumped.dat','w')
             f.write(base64.b64encode(json.dumps(globals()['srcdata']).encode()).decode())
