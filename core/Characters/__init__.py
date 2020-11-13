@@ -118,8 +118,8 @@ def fixFifthSequence(nId, codeNumbers, places):
 
 class Kernel():
     def __init__(self):
-        self.islocked=True
-        self.is_active=True
+        self.islocked=False
+        self.is_active=False
         self.ports={'80':1, '443':1}
         self.hashes={}
         [self.hashes.update({port:base64.b64encode(''.join([chr(random.randint(97,122)) for _ in range(5)]).encode()).decode()}) for port in self.ports.keys()]
@@ -132,14 +132,13 @@ class Robot():
         self.image=image
         self.commands=json.loads(open('core/Characters/cmds.json').read())['commands']
         self.id=str(random.randint(0,100))
+        self.level=1
         self.state=css.FAIL+'locked'+css.ENDC
         # ---
         self.kernel=Kernel()
         self.Engine=Engine
     
     def move(self, pos:dict): raise NotImplementedError
-
-    def BShell(self, cmd): raise NotImplementedError
 
     def parser(self, cmd):
         _cmd=cmd.split()[0].lower()
@@ -187,7 +186,14 @@ class Robot():
             elif _cmd=='bshell':
                 if self.kernel.islocked: raise HackError(css.OKCYAN+'\n[INFO]'+css.ENDC+' Unlock kernel first.'); return
                 if self.kernel.is_active: raise HackError(css.OKCYAN+'\n[INFO]'+css.ENDC+' Disable kernel first.'); return
-                self.BShell(cmd)
+                print(css.OKGREEN+'[CMD]'+css.ENDC+' Entering BrainShell...')
+                if self.level<=1:
+                    print(css.FAIL+'[ERR][#51]'+' BShell unreacheable, this robot hasnt a BShell interface.')
+                else:
+                    if len(params):
+                        self.BShell(' '.join(params))
+                    else:
+                        self.Engine.inbshell=True
             elif _cmd=='info':
                 [print(k,'->',self.kernel.__dict__[k]) for k in self.kernel.__dict__ if not k.startswith('__')]
             elif _cmd=='crack':
@@ -263,17 +269,18 @@ class Robot():
 class Level2Robot(Robot):
     def __init__(self, cols:int, rows:int, Engine, image='M'):
         super().__init__(cols, rows, Engine, image)
+        self.level=2
     
     def parser(self, x):
         super().parser(x)
     
-    def BShell(self, x):
+    def BShell(self, x=None):
         comms=json.loads(open('core/Characters/cmds.json').read())['bscommands']
         cmd=x.split()[0].lower()
         params=x.split()[1:]
         if not cmd in comms:
-            if cmd=='bshell':
-                # start a serial communication service
+            if cmd=='bshell' or not cmd:
+                # start a serial communication
                 self.Engine.inbshell=True
                 if params[0] in comms:
                     cmd=params[0]
@@ -288,8 +295,31 @@ class Level2Robot(Robot):
                 self.move(params[params.index('-pos')+1])
             else:
                 self.move(params[0])
+        if cmd in ['bye', 'exit']:
+            self.Engine.inbshell=False
     
     def move(self, pos):
-        newx=pos.split(',')[0]
-        newy=pos.split(',')[1]
-        print(pos)
+        newx=int(pos.split(',')[0]); x=self.pos[0]
+        newy=int(pos.split(',')[1]); y=self.pos[1]
+        skip=None
+        if x in [0,5]:
+            if newx>x:
+                if x==4:
+                    skip='x'
+            else:
+                if x==0:
+                    skip='x'
+        if y in [0,4]:
+            if newy>y:
+                if y==3:
+                    skip='y'
+            else:
+                if y==0:
+                    skip='y'
+        if not skip:
+            self.pos=[newx, newy]
+        else:
+            if skip=='y':
+                self.pos=[newx, y]
+            else:
+                self.pos=[x, newy]        

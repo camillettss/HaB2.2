@@ -41,6 +41,9 @@ class Shop():
             print('[SHOP][ERR] Unrecognized command:',cmd)
             return
         else:
+            if '-h' in params:
+                self.docs(cmd)
+                return
             if cmd in ['buy', 'shop']:
                 toolname=params[0]
                 if not toolname in self.tools.keys():
@@ -51,5 +54,62 @@ class Shop():
                     return
                 else:
                     self.shop(toolname, int(self.tools[toolname]['prize']))
-            if cmd in ['bye', 'exit']:
+            elif cmd in ['bye', 'exit']:
                 self.engine.inshop=False
+            elif cmd in ['swindow', 'show']:
+                if '-q' in params:
+                    # solo gli acquistabili
+                    for tmode in self.tools: # globals, locals
+                        print(css.OKCYAN+'[INFO]'+css.ENDC+' type:',tmode)
+                        if not len(self.tools[tmode]):
+                            print(' - no tools here.')
+                        for tool in self.tools[tmode]:
+                            if int(self.tools[tmode][tool]['prize'])>int(money):
+                                pass
+                            else:
+                                print(css.OKBLUE+'-'+css.ENDC,tool)
+                else:
+                    for tmode in self.tools: # globals, locals
+                        print(css.OKCYAN+'[INFO]'+css.ENDC+' type:',tmode)
+                        if not len(self.tools[tmode]):
+                            print(' - no tools here.')
+                        for tool in self.tools[tmode]:
+                            print(css.OKBLUE+'-'+css.ENDC,tool)
+            elif cmd=='help':
+                if not len(params):
+                    print(css.HEADER+'[H]'+css.ENDC+' List of commands:')
+                    [print('-',c) for c in self.commands]; print(css.HEADER+'[H]'+css.ENDC+' type "cmd -h" for additiona help about "cmd"')
+                else:
+                    try:
+                        self.docs(params[0])
+                    except:
+                        print(css.FAIL+'[ERR]'+css.ENDC+' Unknown command', cmd)
+            elif cmd in ['desc', 'info']:
+                if cmd=='desc':
+                    if not len(params): print(css.FAIL+'[ERR]'+css.ENDC+' No tool spceified.'); return
+                    if '-tool' in params:
+                        tool=params[params.index('-tool')+1]
+                    else:
+                        tool=params[0]
+                    self.Tdocs(tool)
+                else:
+                    if not len(params):
+                        for tool in self.tools:
+                            self.Tdocs(tool)
+                    else:
+                        if '-tool' in params:
+                            tool=params[params.index('-tool')+1]
+                        else:
+                            tool=params[0]
+                        self.Tdocs(tool)
+    
+    def Tdocs(self, man):
+        data=json.loads(open('core/Shop/storage/tools.json').read())
+        for tmode in data:
+            if not man in data[tmode]: continue
+            [print(key,css.WARNING+'->'+css.ENDC,data[tmode][man][key]) for key in data[tmode][man]]
+    
+    def docs(self, man):
+        data=json.loads(open('core/Shop/cmds.json').read())
+        for key in data['cheatsheet'][man]:
+            print(key,css.WARNING+'->'+css.ENDC,data['cheatsheet'][man][key])

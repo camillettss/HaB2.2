@@ -1,6 +1,7 @@
 {
     "bscommands":[
-        "move"
+        "move",
+        "bye", "exit"
     ],
     "BSsheet":{
         "move":{
@@ -19,6 +20,7 @@
         "encoder",
         "decoder",
         "exit",
+        "crack",
         "info",
         "bshell"
     ],

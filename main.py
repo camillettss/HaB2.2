@@ -68,6 +68,11 @@ class Engine():
         while True:
             while self.inshop:
                 self.shop(globals()['srcdata']['score'])
+            while self.inbshell:
+                try:
+                    self.selected.BShell(input(css.OKCYAN+'[CMD]'+css.ENDC+css.OKGREEN+'[BSH]'+css.ENDC+' >> '))
+                except IndexError:
+                    print(css.FAIL+'[ERR]'+css.ENDC+' Missing a parameter.')
             #sys.stdout.flush()
             #os.system('cls')
             if not len(self.robots): self.win()
