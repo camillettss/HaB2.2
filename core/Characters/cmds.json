@@ -1,14 +1,4 @@
 {
-    "bscommands":[
-        "move",
-        "bye", "exit"
-    ],
-    "BSsheet":{
-        "move":{
-            "params":["-pos"],
-            "output":"sposta nella casella adiacente avente coordinate -pos x,y"
-        }
-    },
     "commands": [
         "help",
         "hack",
@@ -19,24 +9,21 @@
         "translater",
         "encoder",
         "decoder",
-        "exit",
-        "crack",
-        "info",
-        "bshell"
+        "exit"
     ],
     "cheatsheet": {
         "hack": {
             "params": [
                 "port"
             ],
-            "output": "se port \u00c3\u00a8 sbloccata usala per disattivare i sistemi di sicurezza del bot"
+            "output": "se port è sbloccata usala per disattivare i sistemi di sicurezza del bot"
         },
         "scan": {
             "params": [
                 "port"
             ],
             "output": "restituisce una lista delle porte attive o disabilitate",
-            "notes": "se port \u00c3\u00a8 specificato scansionala"
+            "notes": "se port è specificato scansionala"
         },
         "destroy": {
             "params": [],
@@ -81,19 +68,6 @@
         "exit": {
             "params": [],
             "output": "torna alla mappa",
-            "notes": ""
-        },
-        "bshell": {
-            "params": [
-                "-cmd",
-                "-open"
-            ],
-            "output": "entra o esegui un comando nella BrainShell del bot",
-            "notes": "-cmd c = esegui c da remoto, se -open e' specificato entra nella BShell"
-        },
-        "info": {
-            "params": [],
-            "output": "mostra le informazioni del bot",
             "notes": ""
         }
     }

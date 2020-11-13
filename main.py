@@ -298,7 +298,7 @@ class Engine():
         else:
             os.system('cls')
         print('\n\t[-] Hello '+globals()['srcdata']['usrname']+' [-]')
-        print('\t'+(' '*4)+css.HEADER+'[SCORE]'+css.ENDC,globals()['srcdata']['score'],css.HEADER+'[SCORE]\n'+css.ENDC)
+        print('\t'+(' '*4)+css.HEADER+'[SCORE]'+css.ENDC,srcdata['score'],css.HEADER+'[SCORE]\n'+css.ENDC)
         print(css.OKGREEN+'\t'+(' '*5)+'START NEW GAME [1]'+css.ENDC)
         print(css.FAIL+'\t\t  EXIT [0]'+css.ENDC)
         if err:
@@ -415,14 +415,19 @@ def main():
     else:
         os.system('cls')
     if usrdata['firstlaunch'] in ['1',1] or not 'dumped.dat' in os.listdir('data/'):
+        datss=intro()
+        datss.update({'score':0})
+        #print(datss)
         f=open('data/dumped.dat','w+')
-        f.write(base64.b64encode(json.dumps(intro()).encode()).decode())
+        f.write(base64.b64encode(json.dumps(datss).encode()).decode())
         f.close()
+        globals()['srcdata']=datss
+        #print(open('data/dumped.dat').read())
         print('[*] Starting Game...\n'); time.sleep(1)
-        if _sys=="linux":
+        '''if _sys=="linux":
             os.system("clear")
         else:
-            os.system('cls')
+            os.system('cls')'''
     Game=Engine(spawns=2)
     Game.run()
 
