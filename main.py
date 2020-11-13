@@ -386,9 +386,9 @@ def intro():
     print('_ _ _ _ _   per usare le coordinate. per vedere pos o id scrivi "show pos" o "show id"')
     input('\npress any key...')
     if _sys=="linux":
-            os.system("clear")
-        else:
-            os.system('cls')
+        os.system("clear")
+    else:
+        os.system('cls')
     print("l'obiettivo del gioco e' spegnere tutti i robot prima che (niente non ho ancora implementato questa parte).")
     print("Per disattivare un robot devi eseguire il comando shutdown (o destroy, sono la stessa cosa) nella sua shell, come?")
     print("per accedere alla shell bisogna sbloccare il kernel del robot e per farlo devi seguire questi passaggi:")
