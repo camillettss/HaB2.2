@@ -7,8 +7,45 @@ from core.Errors import CommandError
 from core.Colors import bcolors as css
 from core.Shop import Shop
 import json
-import msvcrt
 import atexit
+
+class _Getch:
+    """Gets a single character from standard input.  Does not echo to the screen."""
+    def __init__(self):
+        try:
+            self.impl = _GetchWindows()
+        except ImportError:
+            self.impl = _GetchUnix()
+
+    def __call__(self): return self.impl()
+
+
+class _GetchUnix:
+    def __init__(self):
+        import tty, sys
+
+    def __call__(self):
+        import sys, tty, termios
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        try:
+            tty.setraw(sys.stdin.fileno())
+            ch = sys.stdin.read(1)
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+        return ch
+
+
+class _GetchWindows:
+    def __init__(self):
+        import msvcrt
+
+    def __call__(self):
+        import msvcrt
+        return msvcrt.getch().decode()
+
+
+getch = _Getch()
 
 columns=4
 rows=5
@@ -157,7 +194,7 @@ class Engine():
             print(css.OKCYAN+'[OK]'+css.ENDC+' Done.')
         elif cmd=='bye':
             print('[?] Are you sure?')
-            c=msvcrt.getch().decode()
+            c=getch()
             if c in ['y','s']:
                 # accredita
                 globals()['srcdata']['score']+=self.gamepoints
@@ -237,7 +274,7 @@ class Engine():
         os.system('cls')
         while True:
             print('Do you want to start a new game? (y\\n)')
-            r=msvcrt.getch().decode()
+            r=getch()
             if r=='y':
                 main()
             elif r=='n':
@@ -255,7 +292,7 @@ class Engine():
         print(css.FAIL+'\t\t  EXIT [0]'+css.ENDC)
         if err:
             print('[ERR] invalid key:',err)
-        print('\n1 Enter the option key:'); ck=msvcrt.getch()
+        print('\n1 Enter the option key:'); ck=getch()
         if ck.decode() in ['s',1,'1','y']:
             os.system('cls')
             return
