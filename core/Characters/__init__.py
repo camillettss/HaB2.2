@@ -118,8 +118,8 @@ def fixFifthSequence(nId, codeNumbers, places):
 
 class Kernel():
     def __init__(self):
-        self.islocked=False
-        self.is_active=False
+        self.islocked=True
+        self.is_active=True
         self.ports={'80':1, '443':1}
         self.hashes={}
         [self.hashes.update({port:base64.b64encode(''.join([chr(random.randint(97,122)) for _ in range(5)]).encode()).decode()}) for port in self.ports.keys()]
