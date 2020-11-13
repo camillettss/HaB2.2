@@ -400,9 +400,9 @@ def intro():
     print('[CMD] shutdown                      # ora abbiamo accesso a dei comandi MShell come ad esempio shutdown, eseguilo per spegnere il bot.')
     input('\npress any key to continue...')
     if _sys=="linux":
-            os.system("clear")
-        else:
-            os.system('cls')
+        os.system("clear")
+    else:
+        os.system('cls')
     print('[*] Tutorial completato!')
     f=open('data/userdata.dat','w')
     f.write(base64.b64encode(json.dumps({'firstlaunch':0}).encode()).decode())
