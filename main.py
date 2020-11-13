@@ -9,6 +9,8 @@ from core.Shop import Shop
 import json
 import atexit
 
+_sys=sys.platform.lower()
+
 class _Getch:
     """Gets a single character from standard input.  Does not echo to the screen."""
     def __init__(self):
@@ -259,7 +261,10 @@ class Engine():
     
     # -- screens
     def win(self):
-        os.system('cls')
+        if _sys=="linux":
+            os.system("clear")
+        else:
+            os.system('cls')
         titles=[
             '__   _____  _   _  __        _____ _   _ \n\\ \\ / / _ \\| | | | \\ \\      / /_ _| \\ | |\n \\ V / | | | | | |  \\ \\ /\\ / / | ||  \\| |\n  | || |_| | |_| |   \\ V  V /  | || |\\  |\n  |_| \\___/ \\___/     \\_/\\_/  |___|_| \\_|\n                                         \n',
             '                                                \n# #      #      # #         # #     ###     ### \n# #     # #     # #         # #      #      # # \n #      # #     # #         ###      #      # # \n #      # #     # #         ###      #      # # \n #       #      ###         # #     ###     # # \n'
@@ -271,7 +276,10 @@ class Engine():
         f.close()
         print(css.OKGREEN+random.choice(titles)+css.ENDC)
         input('\n\npress any key to continue..')
-        os.system('cls')
+        if _sys=="linux":
+            os.system("clear")
+        else:
+            os.system('cls')
         while True:
             print('Do you want to start a new game? (y\\n)')
             r=getch()
@@ -285,7 +293,10 @@ class Engine():
                 continue
 
     def main_menu(self, err=None):
-        os.system('cls')
+        if _sys=="linux":
+            os.system("clear")
+        else:
+            os.system('cls')
         print('\n\t[-] Hello '+globals()['srcdata']['usrname']+' [-]')
         print('\t'+(' '*4)+css.HEADER+'[SCORE]'+css.ENDC,globals()['srcdata']['score'],css.HEADER+'[SCORE]\n'+css.ENDC)
         print(css.OKGREEN+'\t'+(' '*5)+'START NEW GAME [1]'+css.ENDC)
@@ -294,7 +305,10 @@ class Engine():
             print('[ERR] invalid key:',err)
         print('\n1 Enter the option key:'); ck=getch()
         if ck in ['s',1,'1','y']:
-            os.system('cls')
+            if _sys=="linux":
+                os.system("clear")
+            else:
+                os.system('cls')
             return
         elif ck in ['e',0,2,'0','2']:
             # dump and exit
@@ -349,7 +363,10 @@ def intro():
             srcdata=json.loads(base64.b64decode(open('data/dumped.dat').read()).decode()) # reload
         elif k.startswith('$cls'):
             time.sleep(float(k.split()[1]))
-            os.system('cls')
+            if _sys=="linux":
+                os.system("clear")
+            else:
+                os.system('cls')
         elif k.startswith('$keydelay'):
             try:
                 input(' '.join(k.split()[1:]))
@@ -368,7 +385,10 @@ def intro():
     print('_ _ _ _ _   con -m specifichi il metodo, usa id per selezionare tramite indrizzo e pos')
     print('_ _ _ _ _   per usare le coordinate. per vedere pos o id scrivi "show pos" o "show id"')
     input('\npress any key...')
-    os.system('cls')
+    if _sys=="linux":
+            os.system("clear")
+        else:
+            os.system('cls')
     print("l'obiettivo del gioco e' spegnere tutti i robot prima che (niente non ho ancora implementato questa parte).")
     print("Per disattivare un robot devi eseguire il comando shutdown (o destroy, sono la stessa cosa) nella sua shell, come?")
     print("per accedere alla shell bisogna sbloccare il kernel del robot e per farlo devi seguire questi passaggi:")
@@ -379,7 +399,10 @@ def intro():
     print('[CMD] hack PORTNUM                  # cracka il kernel passando per PORTNUM che corrisponde al numero di una port bypassata.')
     print('[CMD] shutdown                      # ora abbiamo accesso a dei comandi MShell come ad esempio shutdown, eseguilo per spegnere il bot.')
     input('\npress any key to continue...')
-    os.system('cls')
+    if _sys=="linux":
+            os.system("clear")
+        else:
+            os.system('cls')
     print('[*] Tutorial completato!')
     f=open('data/userdata.dat','w')
     f.write(base64.b64encode(json.dumps({'firstlaunch':0}).encode()).decode())
@@ -387,13 +410,19 @@ def intro():
     return inputs_
 
 def main():
-    os.system('cls')
+    if _sys=="linux":
+        os.system("clear")
+    else:
+        os.system('cls')
     if usrdata['firstlaunch'] in ['1',1] or not 'dumped.dat' in os.listdir('data/'):
         f=open('data/dumped.dat','w+')
         f.write(base64.b64encode(json.dumps(intro()).encode()).decode())
         f.close()
         print('[*] Starting Game...\n'); time.sleep(1)
-        os.system('cls')
+        if _sys=="linux":
+            os.system("clear")
+        else:
+            os.system('cls')
     Game=Engine(spawns=2)
     Game.run()
 
